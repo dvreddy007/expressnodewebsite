@@ -61,3 +61,26 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background: #0165b6;
 }
+.userlist{
+	width:95%;	
+	border-collapse:collapse;
+}
+.userlist th {
+	background-color: #000076;
+	color: #ffffff;
+}
+.userlist tr:nth-child(even) {
+	background-color: #f4f5e1;
+}
+.userlist tr:hover {
+	background-color: #cccccc;
+}
+.userlist tr td, th{
+	margin:0px;
+	padding:10px;
+	border:1px dashed #ccc;
+	
+}
+caption{	
+  text-shadow: 2px 2px 3px blue;
+}

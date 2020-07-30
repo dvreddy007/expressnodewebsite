@@ -1,0 +1,259 @@
+<html>
+<head>
+  <title>Express HTML - Sitemap</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/css/form-style.css">
+</head>
+<body>
+  <div style="margin:100px;">
+    <nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">Express HTML</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="/">Home</a>
+      </li>
+      <li>
+        <a href="/about">About</a>
+      </li>
+	  <li class="active">
+        <a href="/userform">User Registration</a>
+      </li>
+      <li>
+        <a href="/sitemap">Sitemap</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+    <div class="jumbotron"  style="padding:40px;">
+		<table class="userlist" id="userdetailstable" align="center">
+			<caption><h1>List of user details</h1></caption>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Mobile</th>	
+					<th>Country living</th>	
+					<th>Gender</th>	
+					<th></th>	
+				</tr>	
+				</thead>
+			<tbody>
+				<% for (let item of userdetails)  {%>
+				<tr>
+					<td><%= item.name %></td>
+					<td><%= item.email %></td>
+					<td><%= item.mobile %></td>
+					<td><%= item.country %></td>	
+					<td><%= item.gender %></td>
+					<td><button type="button" onclick="addRowHandlers(this)">Update</button> <button type="button" onclick=deleteUser(<%= item %>)>Delete</button></td>					
+				</tr>
+				 <% } %>
+			</tbody>
+		</table>
+		
+	
+      <form name="contactForm" id="userdetails" action="/userdetails" method="POST" onsubmit="return validateForm()">
+			<h2>Application Form</h2>
+			<div class="row">
+				<label>Full Name</label>
+				<input type="text" name="name">
+				<div class="error" id="nameErr"></div>
+			</div>
+			<div class="row">
+				<label>Email Address</label>
+				<input type="text" name="email">
+				<div class="error" id="emailErr"></div>
+			</div>
+			<div class="row">
+				<label>Mobile Number</label>
+				<input type="text" name="mobile" maxlength="10">
+				<div class="error" id="mobileErr"></div>
+			</div>
+			<div class="row">
+				<label>Country</label>
+				<select name="country">
+					<option>Select</option>
+					<option value="AU">Australia</option>
+					<option>India</option>
+					<option>United States</option>
+					<option>United Kingdom</option>
+				</select>
+				<div class="error" id="countryErr"></div>
+			</div>
+			<div class="row">
+				<label>Gender</label>
+				<div class="form-inline">
+					<label><input type="radio" name="gender" value="male"> Male</label>
+					<label><input type="radio" name="gender" value="female"> Female</label>
+				</div>
+				<div class="error" id="genderErr"></div>
+			</div>
+			<div class="row">
+				<label>Hobbies <i>(Optional)</i></label>
+				<div class="form-inline">
+					<label><input type="checkbox" name="hobbies[]" value="sports"> Sports</label>
+					<label><input type="checkbox" name="hobbies[]" value="movies"> Movies</label>
+					<label><input type="checkbox" name="hobbies[]" value="music"> Music</label>
+				</div>
+			</div>
+			<div class="row">
+				<input type="submit" value="Submit">
+			</div>
+		</form>
+    </div>
+  </div>
+  <script>
+  
+  function addRowHandlers() {
+	  var table = document.getElementById("userdetails");
+	  var rows = table.getElementsByTagName("tr");
+	  for (i = 0; i < rows.length; i++) {
+		var currentRow = table.rows[i];
+		var createClickHandler = function(row) {
+		  return function() {
+			var cell = row.getElementsByTagName("td")[0];
+			// check if not null
+			if(!cell) return; // no errors! 
+			var id = cell.innerHTML;
+			alert("id:" + id);
+		  };
+		};
+		currentRow.onclick = createClickHandler(currentRow);
+		console.log(currentRow);
+	  }
+	}
+ function updateUser(row){
+	console.log(JSON.stringify(row));
+ } 
+// Defining a function to display error message
+function printError(elemId, hintMsg) {
+    document.getElementById(elemId).innerHTML = hintMsg;
+}
+// Defining a function to validate form 
+function validateForm() {
+    // Retrieving the values of form elements 
+    var name = document.contactForm.name.value;
+    var email = document.contactForm.email.value;
+    var mobile = document.contactForm.mobile.value;
+    var country = document.contactForm.country.value;
+    var gender = document.contactForm.gender.value;
+    var hobbies = [];
+    var checkboxes = document.getElementsByName("hobbies[]");
+    for(var i=0; i < checkboxes.length; i++) {
+        if(checkboxes[i].checked) {
+            // Populate hobbies array with selected values
+            hobbies.push(checkboxes[i].value);
+        }
+    }
+    
+	// Defining error variables with a default value
+    var nameErr = emailErr = mobileErr = countryErr = genderErr = true;
+    
+    // Validate name
+    if(name == "") {
+        printError("nameErr", "Please enter your name");
+    } else {
+		/*checkName(name){
+		 return http.get(url, {"name":name})
+		}*/
+        var regex = /^[a-zA-Z\s]+$/;                
+        if(regex.test(name) === false) {
+            printError("nameErr", "Please enter a valid name");
+        } else {
+            printError("nameErr", "");
+            nameErr = false;
+        }
+    }
+    
+    // Validate email address
+    if(email == "") {
+        printError("emailErr", "Please enter your email address");
+    } else {
+        // Regular expression for basic email validation
+        var regex = /^\S+@\S+\.\S+$/;
+        if(regex.test(email) === false) {
+            printError("emailErr", "Please enter a valid email address");
+        } else{
+            printError("emailErr", "");
+            emailErr = false;
+        }
+    }
+    
+    // Validate mobile number
+    if(mobile == "") {
+        printError("mobileErr", "Please enter your mobile number");
+    } else {
+        var regex = /^[1-9]\d{9}$/;
+        if(regex.test(mobile) === false) {
+            printError("mobileErr", "Please enter a valid 10 digit mobile number");
+        } else{
+            printError("mobileErr", "");
+            mobileErr = false;
+        }
+    }
+    
+    // Validate country
+    if(country == "Select") {
+        printError("countryErr", "Please select your country");
+    } else {
+        printError("countryErr", "");
+        countryErr = false;
+    }
+    
+    // Validate gender
+    if(gender == "") {
+        printError("genderErr", "Please select your gender");
+    } else {
+        printError("genderErr", "");
+        genderErr = false;
+    }
+    
+    // Prevent the form from being submitted if there are any errors
+    if((nameErr || emailErr || mobileErr || countryErr || genderErr) == true) {
+       return false;
+    } else {
+        // Creating a string from input data for preview
+        /*var dataPreview = "You've entered the following details: \n<br>" +
+                          "Full Name: " + name + "\n<br>" +
+                          "Email Address: " + email + "\n<br>" +
+                          "Mobile Number: " + mobile + "\n<br>" +
+                          "Country: " + country + "\n<br>" +
+                          "Gender: " + gender + "\n<br>";
+        if(hobbies.length) {
+            dataPreview += "Hobbies: " + hobbies.join(", ");
+        }
+        // Display input data in a dialog box before submitting the form
+        document.write(dataPreview);
+		*/
+		document.getElementById("userdetails").submit();
+    }
+	
+	var $formObj = {
+		name: name,
+		email: email,
+		mobile: mobile,
+		country: country,
+		gender: gender,
+		hobbies: hobbies
+	}	
+	console.log(JSON.stringify($formObj))
+};
+/*
+function getFormData($form){
+	var unindexed_array = $form.serializeArray();
+	var indexed_array = {};
+
+	$.map(unindexed_array, function(n, i){
+		indexed_array[n['name']] = n['value'];
+	});
+
+	return indexed_array;
+}*/
+
+</script>
+</body>
+</html>
